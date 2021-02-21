@@ -19,7 +19,7 @@
 .activeClass {
   /* background: #ff615a; */
   border: 2px solid #ff615a;
-  color: white;
+  color: rgb(3, 11, 56);
   margin: 10px;
   padding: 10px;
   border-radius: 25px;
@@ -27,4 +27,9 @@
 
 .inactiveClass {
   margin: 10px;
+  color: #414040;
+}
+
+.ant-layout-header {
+  background: #efefef;
 }

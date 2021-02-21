@@ -8,6 +8,7 @@ import {
   Descriptions,
   Select,
   Form,
+  notification,
 } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { Product } from "../../commoninterfaces/CommonInterfaces";
@@ -38,7 +39,6 @@ export class productcal extends React.Component<any, ProductsCalculation> {
       productsSummary: { amount: 0, cartons: 0, unit: 0 },
     };
   }
-
   render() {
     // @ts-ignore
     return (
@@ -47,9 +47,9 @@ export class productcal extends React.Component<any, ProductsCalculation> {
         <Form name="basic" initialValues={{ remember: true }}>
           <Row justify="center">
             <Col span={18}>
-              <Card title="Search Products">
+              <Card title="Price Calculator">
                 <Row gutter={[16, 16]} justify="center">
-                  <Col span={12}>
+                  <Col span={8}>
                     <Form.Item
                       name="select"
                       label="Product"
@@ -71,7 +71,7 @@ export class productcal extends React.Component<any, ProductsCalculation> {
                     </Form.Item>
                   </Col>
 
-                  <Col span={6}>
+                  <Col span={8}>
                     <Form.Item
                       label="Quantity"
                       name="quantity"
@@ -85,7 +85,7 @@ export class productcal extends React.Component<any, ProductsCalculation> {
                     </Form.Item>
                   </Col>
 
-                  <Col span={6} push={2}>
+                  <Col span={8} push={2}>
                     <Button
                       htmlType={"submit"}
                       type="primary"
@@ -106,16 +106,23 @@ export class productcal extends React.Component<any, ProductsCalculation> {
           <Col span={18}>
             {console.log(this.state.productsSummary.amount)}
             <Card>
-              <Descriptions title="Product Calculation Summary">
-                <Descriptions.Item label="Total Price(RS)">
-                  {this.state.productsSummary.amount}
-                </Descriptions.Item>
-                <Descriptions.Item label="carton(s)">
-                  {this.state.productsSummary.cartons}
-                </Descriptions.Item>
-                <Descriptions.Item label="Unit(s)">
-                  {this.state.productsSummary.unit}
-                </Descriptions.Item>
+              <Descriptions title="Price Calculation Summary">
+
+                <div className="site-card-border-less-wrapper">
+                  <Card title="Total Price(RS)" bordered={false} style={{ width: 300 }}>
+                    <h2>{this.financial(this.state.productsSummary.amount)}</h2>
+                  </Card>
+                </div>
+                <div className="site-card-border-less-wrapper">
+                  <Card title="Carton(s)" bordered={false} style={{ width: 300 }}>
+                  <h2>{this.financial(this.state.productsSummary.cartons)}</h2>
+                  </Card>
+                </div>
+                <div className="site-card-border-less-wrapper">
+                  <Card title="Unit(s)" bordered={false} style={{ width: 300 }}>
+                  <h2>{this.financial(this.state.productsSummary.unit)}</h2>
+                  </Card>
+                </div>
               </Descriptions>
             </Card>
           </Col>
@@ -143,6 +150,7 @@ export class productcal extends React.Component<any, ProductsCalculation> {
 
   loadCalculater() {
     console.log("here", this.state.selectedProductId, this.state.quantity);
+    if(this.state.selectedProductId && this.state.quantity) {
     ProductService.productCal(
       this.state.selectedProductId,
       this.state.quantity
@@ -150,8 +158,35 @@ export class productcal extends React.Component<any, ProductsCalculation> {
       console.log(response.data.data);
       this.setState({ productsSummary: response.data.data });
       console.log("psum", this.state.productsSummary);
+      this.openNotificationSuccess();
+    }).catch(err => {
+      console.log(err);
+      this.openNotificationError(err.response);
+    });
+  } else {
+    
+  }
+}
+
+  openNotificationError(err: String) {
+    notification.error({
+      message: 'Error',
+      description:
+        "Error occurred"
     });
   }
+
+
+  openNotificationSuccess() {
+    notification.success({
+      message: 'Success',
+      description:
+        "Calculation successful"
+    });
+  }
+
+
+  financial = (x: any) => Number.parseFloat(x).toFixed(2);
 
   componentDidMount() {
     this.loadProductList();

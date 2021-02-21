@@ -1,7 +1,7 @@
 import React from "react";
 import "antd/dist/antd.css";
 import "./style.css";
-import { Table, Row, Col, Card, Form, Select } from "antd";
+import { Table, Row, Col, Card, Form, Select, notification } from "antd";
 import ProductService from "../../service/ProductService";
 import { Product } from "../../commoninterfaces/CommonInterfaces";
 
@@ -10,7 +10,7 @@ const columns = [
   {
     title: "Quantity",
     dataIndex: "qty",
-    key: "qty",
+    key: "qty",  
   },
   {
     title: "Price(RS)",
@@ -44,7 +44,7 @@ export class productlist extends React.Component<any, ProductListState> {
         <br />
         <Row justify="center">
           <Col span={12}>
-            <Card title="Search Products">
+            <Card title="Products price list">
               <p>Product</p>
               {/*search input*/}
               <Form name="basic" initialValues={{ remember: true }}>
@@ -93,7 +93,10 @@ export class productlist extends React.Component<any, ProductListState> {
       console.log(response.data.data);
       this.setState({ products: response.data.data });
       console.log(this.state.products);
-    });
+    }).catch(err => {
+      console.log(err);
+      this.openNotificationWithIcon(err.response);
+  });
   }
 
   onChangeProduct(productId: any) {
@@ -101,8 +104,19 @@ export class productlist extends React.Component<any, ProductListState> {
       console.log(response);
       console.log(response.data.data);
       this.setState({ productsGrid: response.data.data });
-    });
+    }).catch(err => {
+      console.log(err);
+      this.openNotificationWithIcon(err.response);
+  });
   }
+ 
+openNotificationWithIcon(err: String){
+  notification.error({
+    message: 'Error',
+    description:
+      "Error occurred"
+  });
+}
 
   componentDidMount() {
     this.loadProductList();
